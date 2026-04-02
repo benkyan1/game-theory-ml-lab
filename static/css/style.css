@@ -1,0 +1,131 @@
+/* Additional Animations and Effects */
+
+/* Particle Effect for Actions */
+@keyframes particle-burst {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+.particle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: particle-burst 0.5s ease-out forwards;
+}
+
+/* Confetti Effect */
+.confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    background: linear-gradient(135deg, #ffd89b, #c7e9fb);
+    position: absolute;
+    animation: confetti-fall 3s linear forwards;
+}
+
+@keyframes confetti-fall {
+    0% {
+        transform: translateY(-100vh) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* Glow Effects */
+.glow-cooperate {
+    animation: glow-green 0.5s ease-out;
+}
+
+.glow-defect {
+    animation: glow-red 0.5s ease-out;
+}
+
+@keyframes glow-green {
+    0% {
+        box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+    }
+    100% {
+        box-shadow: 0 0 20px 10px rgba(76, 175, 80, 0);
+    }
+}
+
+@keyframes glow-red {
+    0% {
+        box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.7);
+    }
+    100% {
+        box-shadow: 0 0 20px 10px rgba(244, 67, 54, 0);
+    }
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Tooltip Styles */
+.custom-tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+}
+
+.custom-tooltip .tooltip-text {
+    visibility: hidden;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 10px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-size: 12px;
+}
+
+.custom-tooltip:hover .tooltip-text {
+    visibility: visible;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .character-avatar {
+        font-size: 50px;
+    }
+    
+    .score-value {
+        font-size: 32px;
+    }
+    
+    .action-btn {
+        margin-bottom: 10px;
+    }
+    
+    .matrix-payoff {
+        font-size: 14px;
+    }
+}

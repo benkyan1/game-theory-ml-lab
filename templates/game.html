@@ -1,0 +1,679 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<style>
+    /* Character Avatars */
+    .character-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 20px;
+        text-align: center;
+        color: white;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .character-avatar {
+        font-size: 80px;
+        filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    .character-name {
+        font-size: 24px;
+        font-weight: bold;
+        margin: 10px 0;
+    }
+    
+    .character-description {
+        font-size: 14px;
+        opacity: 0.9;
+    }
+    
+    /* Interactive Buttons with Icons */
+    .action-btn {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .action-btn:active {
+        transform: scale(0.95);
+    }
+    
+    .btn-cooperate {
+        background: linear-gradient(135deg, #4caf50, #45a049);
+        box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+    }
+    
+    .btn-defect {
+        background: linear-gradient(135deg, #f44336, #da190b);
+        box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3);
+    }
+    
+    .btn-cooperate:hover, .btn-defect:hover {
+        transform: translateY(-2px);
+    }
+    
+    /* Animated Score Cards */
+    .score-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+        color: white;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .score-value {
+        font-size: 48px;
+        font-weight: bold;
+        animation: scorePop 0.5s ease-out;
+    }
+    
+    @keyframes scorePop {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+    }
+    
+    /* History Timeline */
+    .history-timeline {
+        max-height: 400px;
+        overflow-y: auto;
+        padding: 10px;
+    }
+    
+    .history-item {
+        background: white;
+        border-left: 4px solid;
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        animation: slideIn 0.3s ease-out;
+    }
+    
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .history-item.cooperate {
+        border-left-color: #4caf50;
+        background: linear-gradient(90deg, #f0fff4 0%, white 100%);
+    }
+    
+    .history-item.defect {
+        border-left-color: #f44336;
+        background: linear-gradient(90deg, #fff5f5 0%, white 100%);
+    }
+    
+    /* Action Feedback Animation */
+    .feedback-popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0,0,0,0.9);
+        color: white;
+        padding: 20px 40px;
+        border-radius: 50px;
+        font-size: 24px;
+        font-weight: bold;
+        z-index: 1000;
+        animation: fadeOut 1s ease-out forwards;
+        pointer-events: none;
+    }
+    
+    @keyframes fadeOut {
+        0% {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        100% {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(1.5);
+        }
+    }
+    
+    /* Payoff Matrix Styling */
+    .payoff-matrix {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    
+    .matrix-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 10px;
+        font-weight: bold;
+    }
+    
+    .matrix-cell {
+        padding: 15px;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .matrix-cell:hover {
+        background: #f0f0f0;
+        transform: scale(1.05);
+    }
+    
+    .matrix-payoff {
+        font-size: 20px;
+        font-weight: bold;
+    }
+    
+    .matrix-label {
+        font-size: 14px;
+        color: #666;
+    }
+    
+    /* Achievement Badges */
+    .badge-achievement {
+        display: inline-block;
+        margin: 5px;
+        padding: 5px 10px;
+        background: linear-gradient(135deg, #ffd89b 0%, #c7e9fb 100%);
+        border-radius: 20px;
+        font-size: 12px;
+        animation: bounce 0.5s ease;
+    }
+    
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+    }
+    
+    /* Prison Cell Theme */
+    .prison-cell {
+        background: repeating-linear-gradient(
+            45deg,
+            #f5f5f5 0px,
+            #f5f5f5 20px,
+            #e0e0e0 20px,
+            #e0e0e0 40px
+        );
+        border-radius: 15px;
+        padding: 20px;
+        position: relative;
+    }
+    
+    .prison-bars {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+        background: repeating-linear-gradient(
+            90deg,
+            rgba(0,0,0,0.1) 0px,
+            rgba(0,0,0,0.1) 10px,
+            transparent 10px,
+            transparent 20px
+        );
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="prison-cell">
+    <div class="prison-bars"></div>
+    
+    <div class="row">
+        <!-- Player 1 Character Card -->
+        <div class="col-md-6">
+            <div class="character-card" id="player1-card">
+                <div class="character-avatar" id="player1-avatar">
+                    🧑‍⚖️
+                </div>
+                <div class="character-name">You - Prisoner A</div>
+                <div class="character-description">
+                    <i class="fas fa-balance-scale"></i> Choose your fate
+                </div>
+                <div class="mt-3">
+                    <span class="badge bg-light text-dark" id="player1-mood">😐 Neutral</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Player 2 Character Card -->
+        <div class="col-md-6">
+            <div class="character-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="character-avatar" id="player2-avatar">
+                    🕵️‍♂️
+                </div>
+                <div class="character-name">AI - Prisoner B</div>
+                <div class="character-description">
+                    <i class="fas fa-robot"></i> Playing Tit-for-Tat
+                </div>
+                <div class="mt-3">
+                    <span class="badge bg-light text-dark" id="player2-mood">🤖 AI Mode</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-7">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-handcuffs"></i> The Interrogation Room</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-gavel"></i> <strong>The Dilemma:</strong> You and your partner are arrested. 
+                        If both stay silent (cooperate), you get 3 years. If one betrays (defects), they go free while 
+                        the other gets 5 years. If both betray, you both get 1 year.
+                    </div>
+                    
+                    <div class="payoff-matrix">
+                        <div class="row matrix-header">
+                            <div class="col-4"></div>
+                            <div class="col-4 text-center">🤝 Cooperate</div>
+                            <div class="col-4 text-center">⚔️ Defect</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4 matrix-header">🤝 Cooperate</div>
+                            <div class="col-4 matrix-cell" onclick="showTooltip('Both cooperate: Best for society')">
+                                <div class="matrix-payoff">🎁 3, 3</div>
+                                <div class="matrix-label">Both Free</div>
+                            </div>
+                            <div class="col-4 matrix-cell" onclick="showTooltip('You cooperate, partner defects: You get betrayed!')">
+                                <div class="matrix-payoff">😭 0, 5</div>
+                                <div class="matrix-label">Betrayed!</div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4 matrix-header">⚔️ Defect</div>
+                            <div class="col-4 matrix-cell" onclick="showTooltip('You defect, partner cooperates: You escape!')">
+                                <div class="matrix-payoff">😈 5, 0</div>
+                                <div class="matrix-label">Freedom!</div>
+                            </div>
+                            <div class="col-4 matrix-cell" onclick="showTooltip('Both defect: Mutual destruction')">
+                                <div class="matrix-payoff">💀 1, 1</div>
+                                <div class="matrix-label">Both Punished</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-5">
+            <div class="score-card">
+                <i class="fas fa-trophy fa-2x"></i>
+                <div class="score-label">Your Total Score</div>
+                <div class="score-value" id="your-score">0</div>
+                <div class="small mt-2">
+                    <i class="fas fa-chart-line"></i> Higher is better
+                </div>
+            </div>
+            
+            <div class="score-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <i class="fas fa-robot fa-2x"></i>
+                <div class="score-label">AI Opponent Score</div>
+                <div class="score-value" id="opponent-score">0</div>
+                <div class="small mt-2">
+                    <i class="fas fa-chart-line"></i> Strategy: Tit-for-Tat
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fas fa-fist-raised"></i> Make Your Choice</h4>
+                </div>
+                <div class="card-body text-center">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button class="btn-cooperate action-btn w-100" onclick="makeChoice('cooperate')">
+                                <i class="fas fa-handshake fa-2x d-block mb-2"></i>
+                                <strong>COOPERATE</strong><br>
+                                <small>Stay silent • Trust your partner</small>
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <button class="btn-defect action-btn w-100" onclick="makeChoice('defect')">
+                                <i class="fas fa-skull fa-2x d-block mb-2"></i>
+                                <strong>DEFECT</strong><br>
+                                <small>Betray • Save yourself</small>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-history"></i> Interrogation Log
+                        <span id="round-counter" class="badge bg-light text-dark float-end">Round 0</span>
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div id="history-container" class="history-timeline">
+                        <div class="text-muted text-center py-4">
+                            <i class="fas fa-hourglass-half fa-3x"></i><br>
+                            No rounds played yet. Make your first move!
+                        </div>
+                    </div>
+                    <button class="btn btn-warning mt-3" onclick="resetGame()">
+                        <i class="fas fa-redo-alt"></i> Start New Interrogation
+                    </button>
+                    <button class="btn btn-secondary mt-3 ms-2" onclick="analyzeStrategy()">
+                        <i class="fas fa-chart-pie"></i> Analyze My Strategy
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-warning">
+                    <h4 class="mb-0"><i class="fas fa-medal"></i> Achievements</h4>
+                </div>
+                <div class="card-body">
+                    <div id="achievements-container" class="text-center">
+                        <span class="badge-achievement">
+                            <i class="fas fa-handshake"></i> First Move
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let gameHistory = [];
+let achievements = new Set();
+
+function showFeedback(message, type) {
+    const feedback = $(`<div class="feedback-popup">${message}</div>`);
+    $('body').append(feedback);
+    setTimeout(() => feedback.remove(), 1000);
+}
+
+function updateMood(score, isPlayer = true) {
+    const moodMap = [
+        { threshold: 0, icon: "😐", text: "Neutral" },
+        { threshold: 10, icon: "😊", text: "Optimistic" },
+        { threshold: 20, icon: "😎", text: "Confident" },
+        { threshold: 30, icon: "🤑", text: "Winning!" },
+        { threshold: -5, icon: "😰", text: "Worried" },
+        { threshold: -10, icon: "😭", text: "Desperate" }
+    ];
+    
+    let mood = moodMap[0];
+    if (isPlayer) {
+        for (let m of moodMap) {
+            if (score >= m.threshold) mood = m;
+        }
+        $('#player1-mood').html(`${mood.icon} ${mood.text}`);
+        $('#player1-avatar').css('animation', 'float 0.5s ease-in-out');
+        setTimeout(() => $('#player1-avatar').css('animation', ''), 500);
+    }
+}
+
+function checkAchievements() {
+    if (gameHistory.length === 1 && !achievements.has('first_move')) {
+        achievements.add('first_move');
+        $('#achievements-container').append(`
+            <span class="badge-achievement">
+                <i class="fas fa-trophy"></i> First Step Taken!
+            </span>
+        `);
+        showFeedback("🏆 Achievement Unlocked: First Move!", "achievement");
+    }
+    
+    const coopCount = gameHistory.filter(r => r.myAction === 'cooperate').length;
+    if (coopCount >= 5 && !achievements.has('trusting_soul')) {
+        achievements.add('trusting_soul');
+        $('#achievements-container').append(`
+            <span class="badge-achievement">
+                <i class="fas fa-heart"></i> Trusting Soul (5 Cooperations)
+            </span>
+        `);
+        showFeedback("❤️ Achievement: You're a trusting soul!", "achievement");
+    }
+    
+    const defectCount = gameHistory.filter(r => r.myAction === 'defect').length;
+    if (defectCount >= 5 && !achievements.has('ruthless')) {
+        achievements.add('ruthless');
+        $('#achievements-container').append(`
+            <span class="badge-achievement">
+                <i class="fas fa-dragon"></i> Ruthless (5 Defections)
+            </span>
+        `);
+        showFeedback("🐉 Achievement: Ruthless strategist!", "achievement");
+    }
+    
+    if (gameHistory.length >= 10 && !achievements.has('experienced')) {
+        achievements.add('experienced');
+        $('#achievements-container').append(`
+            <span class="badge-achievement">
+                <i class="fas fa-chart-line"></i> Experienced (10 Rounds)
+            </span>
+        `);
+        showFeedback("🎯 Achievement: Experienced player!", "achievement");
+    }
+}
+
+function makeChoice(action) {
+    // Enhanced AI opponent with adaptive behavior
+    let opponentAction = 'cooperate';
+    
+    if (gameHistory.length > 0) {
+        const lastRound = gameHistory[gameHistory.length - 1];
+        // Tit-for-tat with 10% random variation
+        if (Math.random() < 0.9) {
+            opponentAction = lastRound.myAction;
+        } else {
+            opponentAction = Math.random() < 0.5 ? 'cooperate' : 'defect';
+        }
+    }
+    
+    const actionIcons = {
+        cooperate: { icon: "🤝", message: "You chose to cooperate!" },
+        defect: { icon: "⚔️", message: "You chose to defect!" }
+    };
+    
+    const opponentIcons = {
+        cooperate: { icon: "🤝", message: "AI chose to cooperate!" },
+        defect: { icon: "⚔️", message: "AI chose to defect!" }
+    };
+    
+    showFeedback(`${actionIcons[action].icon} ${actionIcons[action].message}`, "action");
+    setTimeout(() => {
+        showFeedback(`${opponentIcons[opponentAction].icon} ${opponentIcons[opponentAction].message}`, "opponent");
+    }, 500);
+    
+    $.ajax({
+        url: '/api/play',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+            action1: action,
+            action2: opponentAction
+        }),
+        success: function(data) {
+            const roundNum = data.history.length;
+            gameHistory.push({
+                round: roundNum,
+                myAction: action,
+                opponentAction: opponentAction,
+                myPayoff: data.payoff1,
+                opponentPayoff: data.payoff2
+            });
+            
+            // Animate score updates
+            $('#your-score').text(data.total_payoff1);
+            $('#opponent-score').text(data.total_payoff2);
+            $('#your-score').css('animation', 'scorePop 0.5s ease-out');
+            $('#opponent-score').css('animation', 'scorePop 0.5s ease-out');
+            setTimeout(() => {
+                $('#your-score').css('animation', '');
+                $('#opponent-score').css('animation', '');
+            }, 500);
+            
+            $('#round-counter').text(`Round ${roundNum}`);
+            updateHistory();
+            updateMood(data.total_payoff1, true);
+            checkAchievements();
+            
+            // Show payoff notification
+            if (data.payoff1 >= 5) {
+                showFeedback("💰 Amazing payoff! You got lucky!", "good");
+            } else if (data.payoff1 === 0) {
+                showFeedback("😭 Betrayed! Your partner defected!", "bad");
+            }
+        }
+    });
+}
+
+function updateHistory() {
+    let html = '';
+    gameHistory.slice().reverse().forEach(round => {
+        const myIcon = round.myAction === 'cooperate' ? '🤝' : '⚔️';
+        const oppIcon = round.opponentAction === 'cooperate' ? '🤝' : '⚔️';
+        const payoffEmoji = round.myPayoff >= 5 ? '💰' : (round.myPayoff === 0 ? '😭' : '😐');
+        
+        html += `
+            <div class="history-item ${round.myAction}">
+                <div class="row">
+                    <div class="col-2">
+                        <span class="badge bg-primary">Round ${round.round}</span>
+                    </div>
+                    <div class="col-5">
+                        <i class="fas fa-user"></i> You: ${myIcon} ${round.myAction.toUpperCase()}
+                    </div>
+                    <div class="col-5">
+                        <i class="fas fa-robot"></i> AI: ${oppIcon} ${round.opponentAction.toUpperCase()}
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-12">
+                        <span class="badge bg-success">🎯 Your Payoff: ${round.myPayoff} ${payoffEmoji}</span>
+                        <span class="badge bg-secondary ms-2">🤖 AI Payoff: ${round.opponentPayoff}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    if (html === '') {
+        html = '<div class="text-muted text-center py-4"><i class="fas fa-hourglass-half fa-3x"></i><br>No rounds played yet. Make your first move!</div>';
+    }
+    
+    $('#history-container').html(html);
+}
+
+function resetGame() {
+    $.ajax({
+        url: '/api/reset-game',
+        method: 'POST',
+        success: function() {
+            gameHistory = [];
+            $('#your-score').text('0');
+            $('#opponent-score').text('0');
+            $('#round-counter').text('Round 0');
+            $('#history-container').html('<div class="text-muted text-center py-4"><i class="fas fa-hourglass-half fa-3x"></i><br>Game reset! Make your first move!</div>');
+            $('#strategy-analysis').html('');
+            showFeedback("🔄 Game reset! Fresh start!", "info");
+        }
+    });
+}
+
+function analyzeStrategy() {
+    if (gameHistory.length < 3) {
+        showFeedback("⚠️ Need at least 3 rounds for analysis!", "warning");
+        return;
+    }
+    
+    const history = gameHistory.map(round => [round.myAction, round.opponentAction]);
+    
+    $.ajax({
+        url: '/api/analyze-behavior',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({history: history}),
+        success: function(data) {
+            const strategyIcons = {
+                always_cooperate: "🕊️",
+                always_defect: "⚔️",
+                tit_for_tat: "🔄",
+                grim_trigger: "😈",
+                random: "🎲"
+            };
+            
+            let html = `
+                <div class="alert alert-success mt-3">
+                    <h5><i class="fas fa-chart-line"></i> Your Strategy Analysis</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>${strategyIcons[data.detected_strategy] || '📊'} Detected Strategy:</strong><br>
+                            ${data.detected_strategy.replace(/_/g, ' ').toUpperCase()}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>🤝 Cooperation Rate:</strong><br>
+                            ${(data.player1_cooperation_rate * 100).toFixed(1)}%
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-6">
+                            <strong>⚡ Retaliatory Rate:</strong><br>
+                            ${(data.retaliatory_rate * 100).toFixed(1)}%
+                        </div>
+                        <div class="col-md-6">
+                            <strong>💯 Mutual Cooperation:</strong><br>
+                            ${data.mutual_cooperation_rounds} rounds
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            if ($('#strategy-analysis').length === 0) {
+                $('#history-container').after(html);
+            } else {
+                $('#strategy-analysis').remove();
+                $('#history-container').after(html);
+            }
+            $('<div id="strategy-analysis"></div>').insertAfter('#history-container');
+            $('#strategy-analysis').html(html);
+        }
+    });
+}
+
+function showTooltip(text) {
+    showFeedback(`📖 ${text}`, "info");
+}
+</script>
+{% endblock %}

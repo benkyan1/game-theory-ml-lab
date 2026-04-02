@@ -1,0 +1,47 @@
+@"
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero-section">
+    <h1 class="display-3 mb-4">
+        <i class="fas fa-handcuffs"></i> Prisoner's Dilemma
+    </h1>
+    <p class="lead mb-5">Interactive Game Theory Simulation | Nash Equilibrium | Strategy Analysis</p>
+    <a href="/game" class="btn btn-primary btn-lg">
+        <i class="fas fa-play"></i> Start Playing
+    </a>
+</div>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <div class="feature-icon">🎮</div>
+                    <h3>Interactive Game</h3>
+                    <p>Play against AI and experience the classic dilemma</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <div class="feature-icon">📊</div>
+                    <h3>Strategy Analysis</h3>
+                    <p>Get insights into your decision-making patterns</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <div class="feature-icon">🧠</div>
+                    <h3>Game Theory</h3>
+                    <p>Learn about Nash equilibrium and optimal strategies</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+"@ | Out-File -FilePath templates\index.html -Encoding utf8

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0"><i class="fas fa-brain"></i> Machine Learning Strategy Optimizer</h3>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <strong>ML Model:</strong> Random Forest classifier trained on 1000+ game scenarios to predict optimal strategies.
+                </div>
+
+                <h4>Custom Payoff Matrix</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Cooperate Reward (R):</label>
+                        <input type="number" id="cooperate-reward" class="form-control" value="3">
+                    </div>
+                    <div class="col-md-6">
+                        <label>Cooperate Punishment (S):</label>
+                        <input type="number" id="cooperate-punishment" class="form-control" value="0">
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <label>Defect Reward (T):</label>
+                        <input type="number" id="defect-reward" class="form-control" value="5">
+                    </div>
+                    <div class="col-md-6">
+                        <label>Defect Punishment (P):</label>
+                        <input type="number" id="defect-punishment" class="form-control" value="1">
+                    </div>
+                </div>
+
+                <button class="btn btn-success mt-3 w-100" onclick="predictOptimal()">
+                    <i class="fas fa-chart-line"></i> Predict Optimal Strategy
+                </button>
+
+                <div id="prediction-result" class="mt-4"></div>
+
+                <h4 class="mt-5">AI vs AI Tournament</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Player 1 Strategy:</label>
+                        <select id="strategy1" class="form-control">
+                            <option value="always_cooperate">Always Cooperate</option>
+                            <option value="always_defect">Always Defect</option>
+                            <option value="tit_for_tat" selected>Tit-for-Tat</option>
+                            <option value="grim_trigger">Grim Trigger</option>
+                            <option value="random">Random</option>
+                        </select>
+                    </div>
+                    <div
